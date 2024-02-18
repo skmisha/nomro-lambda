@@ -13,14 +13,20 @@ const numerologyNumbers = [
     one, two, three, four, five, six, seven, eight, nine
 ];
 export const CONSTANTS = {
-    intro: 'להלן תאור נומרולוגי של חודש אישי של בנאדם',
-    sex: (isMale: boolean) => isMale ? 'מדובר באישה' : 'מדובר בגבר',
-    age: function(isMale: boolean, age: number) {
+    intro: function (isMale: boolean) {
         if (isMale) {
-            return ` ${age}  אישה בת `;
+            return `להלן תאור נומרולוגי של חודש אישי של בנאדם. תנסח את הטקסט בלשון זכר`;
         }
 
-        return `${age}גבר בן `
+        return `להלן תאור נומרולוגי של חודש אישי של בנאדם .תנסח מחדש את הטקסט שינתן בלשון נקבה`;
+    },
+    sex: (isMale: boolean) => !isMale ? 'מדובר באישה' : 'מדובר בגבר',
+    age: function(isMale: boolean, age: number) {
+        if (!isMale) {
+            return `   אישה בת ${age}`;
+        }
+
+        return `גבר בן  ${age}`
     },
     month: function(month: number) {
         const months = [
@@ -37,9 +43,10 @@ export const CONSTANTS = {
             'נובמבר',
             'דצמבר',
         ];
-        return `${months[month]}  החודש הוא `
+        return `  החודש הוא ${months[month]} `
     },
     data: function(pm: number) {
-        return numerologyNumbers[pm];
-    }
+        return ` ${numerologyNumbers[pm]}  `;
+    },
+    glue: 'הנה הטקסט: ',
 }

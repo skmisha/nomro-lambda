@@ -5,6 +5,7 @@ import {ChatCompletionMessageParam} from "openai/src/resources/chat/completions"
 import { personalMonth } from "./numerologyUtilities";
 import {CONSTANTS} from "./constants";
 import dayjs from "dayjs";
+import * as process from "process";
 
 type UserData = {
     dayOfBirth: number;
@@ -18,7 +19,7 @@ type UserData = {
     forYear: number;
 };
 export const handler: APIGatewayProxyHandler = async (userData: UserData) => {
-    console.log("Request event: ", userData);
+    console.log("Request userData: ", userData);
 
     const messages = await getUserPersonalMonthContent(userData);
 
@@ -39,7 +40,7 @@ export const handler: APIGatewayProxyHandler = async (userData: UserData) => {
         };
     }
 };
-const openAiModel = "gpt-4";
+const openAiModel = "gpt-4-0125-preview";
 
 async function openAiChatCompletionCreate(messages: Array<ChatCompletionMessageParam> = [], ) {
 
@@ -48,13 +49,15 @@ async function openAiChatCompletionCreate(messages: Array<ChatCompletionMessageP
         const chatCompletion = await openai.chat.completions.create({
             model: openAiModel,
             messages,
-            max_tokens: 150,
+            max_tokens: 2000,
             response_format: {
                 type: 'text',
             }
         });
-        console.log('*********************************************');
-        console.log('ai logs chatCompletion: ', chatCompletion);
+        console.log('********************************************* 888');
+        console.log('ai logs chatCompletion: ', JSON.stringify(chatCompletion.choices[0].message));
+        console.log('ai logs chatCompletion: ', JSON.stringify(chatCompletion));
+
         console.log('*********************************************');
         return chatCompletion;
     } catch (error: any) {
@@ -79,30 +82,20 @@ async function getUserPersonalMonthContent(userData: UserData): Promise<Array<Ch
     const messages: Array<ChatCompletionMessageParam> = [];
 
     messages.push({
-        role: 'system',
-        content: CONSTANTS.intro,
-    });
-
-    messages.push({
-        role: 'system',
-        content: CONSTANTS.sex(isMale),
-    });
-
-    messages.push({
-        role: 'system',
-        content: CONSTANTS.age(isMale, age),
-    });
-
-    messages.push({
-        role: 'system',
-        content: CONSTANTS.month(pm),
-    });
-
-    messages.push({
         role: 'user',
-        content: CONSTANTS.data(pm),
+        content: [
+            CONSTANTS.intro(isMale),
+            CONSTANTS.sex(isMale),
+            CONSTANTS.age(isMale, age),
+            CONSTANTS.month(pm),
+            CONSTANTS.glue,
+            CONSTANTS.data(pm),
+        ].join(', '),
     });
 
+    console.log('all messages ###############################################')
+    console.log(JSON.stringify(messages))
+    console.log('all messages ###############################################')
 
     return messages;
 }
