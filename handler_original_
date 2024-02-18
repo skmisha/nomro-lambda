@@ -1,0 +1,51 @@
+import { APIGatewayProxyHandler } from 'aws-lambda';
+import { MongoClient } from 'mongodb';
+import axios from 'axios';
+import { SecretsManager } from 'aws-sdk';
+
+// Initialize AWS Secrets Manager
+const secretsManager = new SecretsManager();
+
+export const handler: APIGatewayProxyHandler = async (event) => {
+    console.log("Request event: ", event);
+
+    try {
+        // Retrieve secrets from AWS Secrets Manager
+        const secretValue = await secretsManager.getSecretValue({ SecretId: 'YourSecretId' }).promise();
+        const secrets = JSON.parse(secretValue.SecretString);
+
+        // const uri = secrets.mongoDbUri;
+        // const dbName = secrets.dbName;
+        const externalApiUrl = secrets.externalApiUrl;
+
+        // Connect to MongoDB
+        // const client = new MongoClient(uri);
+        // await client.connect();
+        // const database = client.db(dbName);
+        // const collection = database.collection(secrets.collectionName);
+        //
+        // // Example MongoDB operation
+        // const mongoResponse = await collection.findOne({ /* query */ });
+
+        // Example of making an external HTTP request
+        const externalApiResponse = await axios.get(externalApiUrl);
+
+        return {
+            statusCode: 200,
+            body: JSON.stringify({
+                mongoData: 'mongoResponse',
+                externalData: externalApiResponse.data
+            }),
+        };
+    } catch (error) {
+        console.error("Error: ", error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: 'Internal Server Error' }),
+        };
+    } finally {
+        if (client) {
+            await client.close();
+        }
+    }
+};
