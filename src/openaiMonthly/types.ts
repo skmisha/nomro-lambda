@@ -11,3 +11,11 @@ export type UserRequestData = {
     forMonth: number;
     forYear: number;
 };
+
+export type EmailSender = {
+    userEmail: string;
+    subject: string;
+    content: string;
+    attachmentPath: string;
+    html?: string;
+}

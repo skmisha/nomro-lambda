@@ -23,6 +23,9 @@ dependencies:
   dotenv:
     specifier: ^16.4.4
     version: 16.4.4
+  nodemailer:
+    specifier: ^6.9.9
+    version: 6.9.9
   openai:
     specifier: ^4.26.0
     version: 4.28.0
@@ -879,6 +882,11 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
+    dev: false
+
+  /nodemailer@6.9.9:
+    resolution: {integrity: sha512-dexTll8zqQoVJEZPwQAKzxxtFn0qTnjdQTchoU6Re9BUUGBJiOy3YMn/0ShTW6J5M0dfQ1NeDeRTTl4oIWgQMA==}
+    engines: {node: '>=6.0.0'}
     dev: false
 
   /once@1.4.0:
