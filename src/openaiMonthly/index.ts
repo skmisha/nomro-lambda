@@ -7,22 +7,11 @@ import {CONSTANTS} from "./constants";
 import dayjs from "dayjs";
 import * as process from "process";
 import {createPDF} from "./pdf/pdfy";
+import {UserRequestData} from "./types";
 
-
-type UserData = {
-    dayOfBirth: number;
-    monthOfBirth: number;
-    yearOfBirth: number;
-    profession?: string;
-    isMale: true;
-    email: string;
-    forDay: number;
-    forMonth: number;
-    forYear: number;
-};
 const openAiModel = "gpt-4-0125-preview";
 const max_tokens = 2000;
-export const handler: APIGatewayProxyHandler = async (userData: UserData) => {
+export const handler: APIGatewayProxyHandler = async (userData: UserRequestData) => {
     console.log("Request userData: ", userData);
 
     try {
@@ -30,12 +19,21 @@ export const handler: APIGatewayProxyHandler = async (userData: UserData) => {
 
     const chatCompletions = await openAiChatCompletionCreate(messages);
     const content = chatCompletions.choices[0].message.content;
+    // const content = " אתה נמצא בתקופה שבה האירועים מתקדמים בקצב יותר איטי, כאילו הזמן מתארך והכל נע במסלול משלו. זה לא הזמן המתאים ביותר לקבל החלטות גורליות. עליך לפתוח את דעתך לכל האופציות, כיוון שכל החלטה נחרצת עלולה להוביל לתוצאות לא רצויות. בתקופה זו, נושאי זוגיות ושיתופי פעולה תופסים מקום מרכזי בחייך, ויש לך הרבה הזדמנויות לשתף פעולה עם אחרים. אם אתה רווק, קיים פוטנציאל לזוגיות מעמיקה ורצינית. זו גם תקופה טובה לקבל עזרה אם אתה נתקל בבעיות, באיזה תחום שהוא. אין צורך להסתמך רק על עצמך.," +
+    //     "" +
+    //     "אם אתה שוקל להרחיב או לפתוח עסק, כנראה שתזדקק לעזרה, ייעוץ או שיתוף פעולה עם מומחה בתחום מסוים. \"חוק המגנט\", שפועל בתקופה זו, מעודד אותך להאט את הקצב, להתחזק בסבלנות ולא לרוץ להשיג את מטרותיך בנחישות יתרה. לפעמים, הזדמנויות יגיעו אליך מעצמן, בלי שתצטרך ללחוץ. למשל, אם פוטרת מעבודתך ולא הצלחת למצוא עבודה חדשה למרות שליחת קורות חיים רבים, יתכן כי ברגע שתתפנה למצב של שלווה פנימית וקבלה, הצעה לעבודה תגיע אליך בלי מאמץ." +
+    //     "" +
+    //     "שים לב, זו גם תקופה רגישה במיוחד בשבילך. מצבי רוח שלך עלולים להיות משתנים, ואולי תחוש חוסר איזון רגשי. הגוף שלך עלול להיות רגיש יותר לאלרגיות, וירוסים ושינויים סביבתיים. אתה עשוי להתמודד עם פחדים והיסוסים, ואף דילמות בזוגיות או במערכות יחסים אחרות עשויות להתעורר." +
+    //     "" +
+    //     "העצה שלי אליך היא לנצל את הפוטנציאל והבשלות שהתקופה הזו מציעה. זה הזמן להיכנס להריון, לחוות זוגיות עמוקה, להקים או להתמקד בהורות, לחפש שיתופי פעולה עם אחרים או אפילו לחתום על שותפויות עסקיות. מצא זמן לרגוע ולטפח את השלווה הפנימית שלך, תן לדברים להשתלב בזמנם, ונהג זהירות בקבלת החלטות. בנוסף, דמויות נשיות צפויות להשפיע עליך באופן חיובי ומשמעותי במהלך התקופה הזו."
+        console.log('content::::::', content);
     const paragraph = content
-        .replaceAll('\"', '"')
+        .replaceAll('\\"', '"')
         .replaceAll('"\\', '"')
-        .replaceAll('n\\', '')
-        .replaceAll('\n', '');
-    await createPDF(paragraph);
+        .replaceAll('ֿ\\n', '')
+        .replaceAll('n\\', '');
+        console.log('paragraph::::::', paragraph);
+        await createPDF(paragraph, userData);
 
         return {
             statusCode: 200,
@@ -78,7 +76,7 @@ async function openAiChatCompletionCreate(messages: Array<ChatCompletionMessageP
     }
 }
 
-async function getUserPersonalMonthContent(userData: UserData): Promise<Array<ChatCompletionMessageParam>> {
+async function getUserPersonalMonthContent(userData: UserRequestData): Promise<Array<ChatCompletionMessageParam>> {
     const {
         yearOfBirth,
         monthOfBirth,
@@ -121,9 +119,11 @@ const userData = {
     yearOfBirth: 1979,
     profession: 'מהנדס',
     isMale: true,
+    firstName: 'מיכאל',
+    lastName: 'קושניריוב',
     email: 'mkushniriov@gmail.com',
     forDay: 19,
-    forMonth: 2,
+    forMonth: 6,
     forYear: 2024,
 };
 
