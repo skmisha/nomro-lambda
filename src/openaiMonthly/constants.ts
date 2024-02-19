@@ -15,7 +15,7 @@ const numerologyNumbers = [
 export const CONSTANTS = {
     intro: function (isMale: boolean) {
         if (isMale) {
-            return `להלן תאור נומרולוגי של חודש אישי של בנאדם. תנסח את הטקסט בלשון זכר`;
+            return ` להלן תאור נומרולוגי של חודש אישי של בנאדם. תנסח את הטקסט בלשון זכר ותפנה לקורה בגוף שני.`;
         }
 
         return `להלן תאור נומרולוגי של חודש אישי של בנאדם .תנסח מחדש את הטקסט שינתן בלשון נקבה`;
@@ -49,4 +49,6 @@ export const CONSTANTS = {
         return ` ${numerologyNumbers[pm]}  `;
     },
     glue: 'הנה הטקסט: ',
+    point: '.',
+    comma: ',',
 }

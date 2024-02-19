@@ -6,6 +6,8 @@ import { personalMonth } from "./numerologyUtilities";
 import {CONSTANTS} from "./constants";
 import dayjs from "dayjs";
 import * as process from "process";
+import {createPDF} from "./pdf/pdfy";
+
 
 type UserData = {
     dayOfBirth: number;
@@ -18,18 +20,28 @@ type UserData = {
     forMonth: number;
     forYear: number;
 };
+const openAiModel = "gpt-4-0125-preview";
+const max_tokens = 2000;
 export const handler: APIGatewayProxyHandler = async (userData: UserData) => {
     console.log("Request userData: ", userData);
 
+    try {
     const messages = await getUserPersonalMonthContent(userData);
 
-    const chatCompletions = openAiChatCompletionCreate(messages)
-    try {
+    const chatCompletions = await openAiChatCompletionCreate(messages);
+    const content = chatCompletions.choices[0].message.content;
+    const paragraph = content
+        .replaceAll('\"', '"')
+        .replaceAll('"\\', '"')
+        .replaceAll('n\\', '')
+        .replaceAll('\n', '');
+    await createPDF(paragraph);
+
         return {
             statusCode: 200,
             body: {
                 date: Date.now(),
-                chatCompletions,
+                chatCompletions: '',
             },
         };
     } catch (error) {
@@ -40,25 +52,24 @@ export const handler: APIGatewayProxyHandler = async (userData: UserData) => {
         };
     }
 };
-const openAiModel = "gpt-4-0125-preview";
+
 
 async function openAiChatCompletionCreate(messages: Array<ChatCompletionMessageParam> = [], ) {
 
     const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
     try {
+        console.log(`*** asking ai model: ${openAiModel} `);
         const chatCompletion = await openai.chat.completions.create({
             model: openAiModel,
             messages,
-            max_tokens: 2000,
+            max_tokens,
             response_format: {
                 type: 'text',
             }
         });
         console.log('********************************************* 888');
         console.log('ai logs chatCompletion: ', JSON.stringify(chatCompletion.choices[0].message));
-        console.log('ai logs chatCompletion: ', JSON.stringify(chatCompletion));
-
-        console.log('*********************************************');
+        console.log(Date.now(), '*********************************************');
         return chatCompletion;
     } catch (error: any) {
         console.log('error here', error)
@@ -85,12 +96,16 @@ async function getUserPersonalMonthContent(userData: UserData): Promise<Array<Ch
         role: 'user',
         content: [
             CONSTANTS.intro(isMale),
+            CONSTANTS.point,
             CONSTANTS.sex(isMale),
+            CONSTANTS.comma,
             CONSTANTS.age(isMale, age),
-            CONSTANTS.month(pm),
+            CONSTANTS.comma,
+            CONSTANTS.month(forMonth),
+            CONSTANTS.point,
             CONSTANTS.glue,
             CONSTANTS.data(pm),
-        ].join(', '),
+        ].join(''),
     });
 
     console.log('all messages ###############################################')
@@ -99,7 +114,7 @@ async function getUserPersonalMonthContent(userData: UserData): Promise<Array<Ch
 
     return messages;
 }
-
+// ############################################################
 const userData = {
     dayOfBirth: 8,
     monthOfBirth: 11,

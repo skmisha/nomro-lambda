@@ -5,7 +5,8 @@
   "main": "src/",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-openai": "tsc -p tsconfig.json",
+    "build-openai": "tsc -p tsconfig.json && npm run copy-pdf-assets",
+    "copy-pdf-assets": "cp -a ./src/openaiMonthly/pdf/assets dist/openaiMonthly/pdf/",
     "build-pdf-builder": "tsc -p tsconfig.pdf.json",
     "archive": "cp -a node_modules ./dist/ && cd ./dist && zip -r handler.zip .",
     "done": "npm run build && npm run archive"

@@ -5,8 +5,8 @@
     "module": "commonjs",                             // Specify module code generation
     "lib": ["es6", "dom"],                            // Specify library files to be included in the compilation
     "allowJs": true,                                  // Allow JavaScript files to be compiled
-    "outDir": "./dist/pdf",                               // Redirect output structure to the directory
-    "rootDir": "./src/pdf/index.ts",                               // Specify the root directory of input files
+    "outDir": "./src/openaiMonthly/pdf",                               // Redirect output structure to the directory
+    "rootDir": "./src/openaiMonthly/pdf",                               // Specify the root directory of input files
     "strict": false,                                   // Enable all strict type-checking options
     "esModuleInterop": true,                          // Enables emit interoperability between CommonJS and ES Modules
     "skipLibCheck": true,                             // Skip type checking of declaration files
@@ -25,7 +25,7 @@
     "emitDecoratorMetadata": true                     // Enables experimental support for emitting type metadata for decorators
   },
   "include": [
-    "src/pdf/*"                                        // Include all files in the src directory
+    "src/openaiMonthly/pdf/pdf_tester.ts"                                        // Include all files in the src directory
   ],
   "exclude": [
     "node_modules",                                   // Exclude the node_modules directory
